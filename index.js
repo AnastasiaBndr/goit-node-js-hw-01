@@ -53,7 +53,6 @@ async function addContact(name, email, phone) {
     fs.writeFile(contsctsPath, JSON.stringify(newArr), (err) => {
       if (err) console.log(err);
     });
-    console.log(obj);
     return [obj];
   } catch (err) {
     return err;
