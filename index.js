@@ -4,7 +4,7 @@ const path = require("node:path");
 
 var content;
 
-const contsctsPath = path.resolve("./src/db/contacts.json");
+const contsctsPath = path.resolve("./db/contacts.json");
 
 async function listContacts() {
   try {
@@ -18,7 +18,10 @@ async function listContacts() {
 async function getContactById(contactId) {
   try {
     const data = await fs.readFile(contsctsPath, "utf8");
-    return JSON.parse(data).filter((el) => el.id === contactId);
+    const obj = JSON.parse(data).filter((el) => el.id === contactId);
+    if (obj.length !== 0) {
+      return obj;
+    } else return null;
   } catch (err) {
     return null;
   }
@@ -28,11 +31,14 @@ async function removeContact(contactId) {
   try {
     const data = await fs.readFile(contsctsPath, "utf8");
     const deleted = JSON.parse(data).filter((el) => el.id === contactId);
-    const newArr = JSON.parse(data).filter((el) => el.id != contactId);
-    fs.writeFile(contsctsPath, JSON.stringify(newArr), (err) => {
-      if (err) console.log(err);
-    });
-    return deleted;
+    console.log(deleted.length);
+    if (deleted.length !== 0) {
+      const newArr = JSON.parse(data).filter((el) => el.id != contactId);
+      fs.writeFile(contsctsPath, JSON.stringify(newArr), (err) => {
+        if (err) console.log(err);
+      });
+      return deleted;
+    } else return null;
   } catch (err) {
     return err;
   }
@@ -47,7 +53,8 @@ async function addContact(name, email, phone) {
     fs.writeFile(contsctsPath, JSON.stringify(newArr), (err) => {
       if (err) console.log(err);
     });
-    return obj;
+    console.log(obj);
+    return [obj];
   } catch (err) {
     return err;
   }
@@ -68,19 +75,24 @@ function makeid() {
 async function invokeAction({ action, id, name, email, phone }) {
   switch (action) {
     case "list":
-      console.log(await listContacts());
+      console.table(await listContacts(), ["id", "name", "phone", "email"]);
       break;
 
     case "get":
-      console.log(await getContactById(id));
+      console.table(await getContactById(id), ["id", "name", "phone", "email"]);
       break;
 
     case "add":
-      console.log(await addContact(name, email, phone));
+      console.table(await addContact(name, email, phone), [
+        "id",
+        "name",
+        "phone",
+        "email",
+      ]);
       break;
 
     case "remove":
-      console.log(await removeContact(id));
+      console.table(await removeContact(id), ["id", "name", "phone", "email"]);
       break;
 
     default:
