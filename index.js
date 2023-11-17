@@ -4,7 +4,7 @@ const path = require("node:path");
 
 var content;
 
-const contsctsPath = path.resolve("./db/contacts.json");
+const contsctsPath = path.resolve("db", "contacts.json");
 
 async function listContacts() {
   try {
@@ -31,7 +31,6 @@ async function removeContact(contactId) {
   try {
     const data = await fs.readFile(contsctsPath, "utf8");
     const deleted = JSON.parse(data).filter((el) => el.id === contactId);
-    console.log(deleted.length);
     if (deleted.length !== 0) {
       const newArr = JSON.parse(data).filter((el) => el.id != contactId);
       fs.writeFile(contsctsPath, JSON.stringify(newArr), (err) => {
